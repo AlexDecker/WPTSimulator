@@ -13,4 +13,6 @@ void calculatePower(Matrix RealI, Matriz ImagI, Matrix RealZ, Matrix ImagZ);
 
 void calculateUnitaryImpedance(double resistence, double capacitance, double selfInductance, double* realZ, double* imagZ);
 
+void calculateCoilSelfParams(Coil coil, double* inductance, double* resistence, double permeability);
 
+void calculateMutualInductance(RLCsystem s1, RLCsystem s2, double permeability);
