@@ -1,3 +1,7 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
 Class Coil{
 
 	public:
@@ -24,6 +28,6 @@ Class Coil{
 		double getSelfInductance();
 //*********************************************************************
 	private:
-
+		void calculateCoilSelfParams(Coil coil, double* inductance, double* resistence, double permeability);
 
 };
