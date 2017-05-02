@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "../aux/Matrix.h"
 
 typedef struct{
 	double x;
@@ -14,6 +15,16 @@ enum AXIS {
 	AXIS_Y, 
 	AXIS_Z
 };
+
+typedef struct{
+	Matrix imag;
+	Matrix real;
+}complexMatrix;
+
+typedef struct{
+	double imag;
+	double real;
+}complexDouble;
 
 //resistivity (ohm*m) table at 20ºC
 //(http://hyperphysics.phy-astr.gsu.edu/hbase/Tables/rstiv.html)

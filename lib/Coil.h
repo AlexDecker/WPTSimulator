@@ -26,8 +26,14 @@ Class Coil{
 		pointVector getPointVector();
 		double getInnerResistance();
 		double getSelfInductance();
+	//The points are public to facilitate the Mutual Inductance calculation
+		pointVector points;
 //*********************************************************************
 	private:
+		double wireRadius;
+		double resistance;
+		double selfInductance;
+
 		void calculateCoilSelfParams(Coil coil, double* inductance, double* resistence, double permeability);
 
 };

@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "../aux/Matrix.h"
 #include "RLCSystem.h"
 #include <stdio.h>
@@ -7,13 +8,24 @@
 Class WPTHelper{
 
 	public:
-	
+		static WPTHelper* getInstance();
 //*********************************************************************
 	private:
-		void calculateCurrents(Matrix RealZ, Matrix ImagZ, Matrix RealV,
-			Matrix ImagV, Matrix& RealI, Matrix& ImagI);
-		void calculatePower(Matrix RealI, Matriz ImagI, Matrix RealZ,
-			Matrix ImagZ);
-		void calculateMutualInductance(RLCsystem s1, RLCsystem s2,
-			double permeability);
+		//(Singleton pattern issues)
+		WPTHelper(){};  
+	  	WPTHelper(WPTHelper const&){};             // copy constructor is private
+	  	WPTHelper& operator=(WPTHelper const&){};  // assignment operator is private
+	  	static WPTHelper* Instance = NULL;
+
+	  	//Matrix for global kirchhoff estimations
+	  	complexMatrix Impedance;
+	  	complexMatrix SourceVoltage;
+	  	complexMatrix Current;
+
+	  	double permeability;
+
+	  	RLCSystem* environment;//pointers to all RLC Systems in the environment (index=id of each RLCSystem)
+
+		void calculateCurrents();
+		void calculateMutualInductance(int id1, int id2);
 };
