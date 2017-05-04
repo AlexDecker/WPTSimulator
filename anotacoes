@@ -1,2 +1,21 @@
 Usar o exemplo wireless/power-adaptation-distance.cc como referência para a representação da movimentação dos nós.
 Fonte inesgotável de funções para matrizes:  http://www.algarcia.org/nummeth/Programs2E.html
+
+Integração com o ns3:
+	Seguindo as recomendações de https://www.nsnam.org/wiki/HOWTO_make_and_use_a_new_application
+	Foram criados os arquivos WPT-[client/server].[cc/h] no diretório ns-3.26/src/applications/model/
+		Serventia:
+		A nomenclatura cliente/servidor foi escolhida ao invés de receptor/transmissor para adequar melhor à terminologia de redes. 
+		Repleacements especiais (Importância temporária)
+			UdpEcho with Wpt
+		   	UDP_ECHO with WPT_
+		    udp-echo with WPT
+		    udpecho with wpt
+		    Udp Echo with WPT
+	Foram criados os arquivos WPT-helper.[cc/h] no diretório ns-3-dev/src/applications/helper/
+	src/applications/wscript foi editado. Incluidos os arquivos adicionados nos ítens anteriores
+	Adicionado o diretório WPT em ns-3-dev/examples/
+		Copiados e modificados os arquivos examples-to-run.py e wscript de /udp/. Trocadas as referências de "udp-echo" por "WPT"
+		criado o arquivo exemplo WPT.cc no mesmo diretório
+		(para build, "./waf", para run, "./waf --run WPT")
+
