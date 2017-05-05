@@ -1,31 +1,41 @@
 #include "constants.h"
 #include "../aux/Matrix.h"
-#include "RLCSystem.h"
+//#include "RLCSystem.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
-Class WPTHelper{
+Class GlobalCoupler{
 
 	public:
-		static WPTHelper* getInstance();
+		static GlobalCoupler* getInstance();
+		complexDouble getCurrent(int nodeId);
+
+		void updateVoltageSource(int nodeId, complexDouble newVoltage);
+		void updateCapacitance(int nodeId, double newCapacitance);
+		void updateResitance(int nodeId, double newResistance);
+
+		void updateMutualCouplingMatrix(complexMatrix newMetrix);
 //*********************************************************************
 	private:
 		//(Singleton pattern issues)
-		WPTHelper(){};  
-	  	WPTHelper(WPTHelper const&){};             // copy constructor is private
-	  	WPTHelper& operator=(WPTHelper const&){};  // assignment operator is private
-	  	static WPTHelper* Instance = NULL;
+		GlobalCoupler(){};  
+	  	GlobalCoupler(GlobalCoupler const&){};             // copy constructor is private
+	  	GlobalCoupler& operator=(GlobalCoupler const&){};  // assignment operator is private
+	  	static GlobalCoupler* Instance = NULL;
 
 	  	//Matrix for global kirchhoff estimations
-	  	complexMatrix Impedance;
-	  	complexMatrix SourceVoltage;
-	  	complexMatrix Current;
+	  	Matrix CapacitanceMatrix;//1xn matrix
+	  	Matrix ResistanceMatrix;//1xn matrix
+	  	Matrix MutualCouplingMatrix;//nxn matrix
+	  	complexMatrix SourceVoltage;//2x1xn matrix
+	  	complexMatrix Current;//2x1xn matrix
 
-	  	double permeability;
-
-	  	RLCSystem* environment;//pointers to all RLC Systems in the environment (index=id of each RLCSystem)
+	  	//for future implementations:
+	  	//double permeability;
+	  	//RLCSystem* environment;//pointers to all RLC Systems in the environment (index=id of each RLCSystem)
 
 		void calculateCurrents();
-		void calculateMutualInductance(int id1, int id2);
+		//for future implementations:
+		//void calculateMutualInductance(int id1, int id2);
 };
