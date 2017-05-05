@@ -26,6 +26,12 @@ typedef struct{
 	double real;
 }complexDouble;
 
+//default simulation values
+#define DEFAULT_CAPACITANCE 1.0e-6 //(Farad)
+#define DEFAULT_RESISTANCE  50.0 //(Ohm)
+#define DEFAULT_MUTUAL_COUPLING 0.0 //(Henry)
+#define DEFAULT_SOURCE_VOLTAGE 1.0 //(Volt)
+
 //resistivity (ohm*m) table at 20ºC
 //(http://hyperphysics.phy-astr.gsu.edu/hbase/Tables/rstiv.html)
 #define R_SILVER 1.59e-8
