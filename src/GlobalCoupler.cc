@@ -6,22 +6,22 @@ GlobalCoupler::getInstance(int nNodes=2){
 		if(nNodes>1){
 			Instance = new GlobalCoupler();
 			
-			CapacitanceMatrix = new Matrix(n);
+			CapacitanceMatrix = new Matrix(nNodes);
 			CapacitanceMatrix.set(DEFAULT_CAPACITANCE);
 
-		  	ResistanceMatrix = new Matrix(n);
+		  	ResistanceMatrix = new Matrix(nNodes);
 		  	CapacitanceMatrix.set(DEFAULT_RESISTANCE);
 
-		  	Matrix MutualCouplingMatrix = new Matrix(n,n);
+		  	Matrix MutualCouplingMatrix = new Matrix(nNodes,nNodes);
 		  	CapacitanceMatrix.set(DEFAULT_MUTUAL_COUPLING);
 		  	
-		  	SourceVoltage.imag = new Matrix(n);
-		  	SourceVoltage.real = new Matrix(n);
+		  	SourceVoltage.imag = new Matrix(nNodes);
+		  	SourceVoltage.real = new Matrix(nNodes);
 		  	SourceVoltage.imag.set(0.0);
 		  	SourceVoltage.real.set(DEFAULT_SOURCE_VOLTAGE);
 		  	
-		  	Current.imag = new Matrix(n);
-		  	Current.real = new Matrix(n);
+		  	Current.imag = new Matrix(nNodes);
+		  	Current.real = new Matrix(nNodes);
 		  	Current.imag.set(0.0);
 		  	Current.real.set(0.0);
 		}else{
@@ -81,10 +81,31 @@ GlobalCoupler::updateResitance(int nodeId, double newResistance){
 
 void
 GlobalCoupler::updateMutualCouplingMatrix(complexMatrix newMetrix){
-
+	if((newMetrix.rRow()==MutualCouplingMatrix.nRow())&&
+		(newMetrix.nCol()==MutualCouplingMatrix.nCol())){
+			MutualCouplingMatrix = newMetrix;
+	}else{
+		NS_LOG_UNCOND("GlobalCoupler: The size of the new matrix must agree with the old one.");
+		return;
+	}
 }
 
 void
 GlobalCoupler::calculateCurrents(){
+	int nNodes = MutualCouplingMatrix.nRow();
+	complexMatrix Z, Z_inv;
+	Z.real = new Matrix(nNodes,nNodes);//creates the Z matrix
+	Z.imag = new Matrix(nNodes,nNodes);
+	Z_inv.real = new Matrix(nNodes,nNodes);//creates the inverse matrix
+	Z_inv.imag = new Matrix(nNodes,nNodes);
 
+	for(int i=0; i<MutualCouplingMatrix.nRow(); i++){
+		for(int j=0; j<MutualCouplingMatrix.nCol(); j++){
+			if(i==j){
+
+			}else{
+				Z.imag(i,j) = -
+			}
+		}
+	}
 }
