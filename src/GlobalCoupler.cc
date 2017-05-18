@@ -1,11 +1,9 @@
 #include "../lib/GlobalCoupler.h"
 
 static GlobalCoupler*
-GlobalCoupler::getInstance(int nNodes=2){
+GlobalCoupler::getInstance(int nNodes=2, double permeability=DEFAULT_PERMEABILITY, double frequency=DEFAULT_FREQUENCY){
 	if(Instance==NULL){
 		if(nNodes>1){
-			Instance = new GlobalCoupler();
-			
 			CapacitanceMatrix = new Matrix(nNodes);
 			CapacitanceMatrix.set(DEFAULT_CAPACITANCE);
 
@@ -24,6 +22,21 @@ GlobalCoupler::getInstance(int nNodes=2){
 		  	Current.real = new Matrix(nNodes);
 		  	Current.imag.set(0.0);
 		  	Current.real.set(0.0);
+			
+			if(env_permeability>0.0)
+				env_permeability = permeability;
+			else{
+				NS_LOG_UNCOND("GlobalCoupler: The permeability must be more then 0.0.");
+				return NULL;
+			}
+			if((frequency>=F_1KHZ)&&(frequency<=F_3MHZ))
+				w = 2*PI*frequency;
+			else{
+				NS_LOG_UNCOND("GlobalCoupler: The global resonant frequency must be between 1KHz and 3MHz.");
+				return NULL;
+			}
+			Instance = new GlobalCoupler();
+			coilContainer = (Coil*)malloc(nNodes*sizeof(Coil));
 		}else{
 			NS_LOG_UNCOND("GlobalCoupler: Number of nodes must be greater then one.");
 			return NULL;
@@ -34,7 +47,7 @@ GlobalCoupler::getInstance(int nNodes=2){
 
 complexDouble
 GlobalCoupler::getCurrent(int nodeId){
-	if((nodeId>=0)&&(nodeId<Current.real.nRow())){
+	if((nodeId>=0)&&(nodeId<nodesUpToNow)){
 		
 		if(!allTheSame)calculateCurrents();//Check if it must to recalculate the values
 
@@ -49,8 +62,8 @@ GlobalCoupler::getCurrent(int nodeId){
 }
 
 void 
-GlobalCoupler::updateVoltageSource(int nodeId, complexDouble newVoltage){
-	if((nodeId>=0)&&(nodeId<SourceVoltage.real.nRow())){
+GlobalCoupler::updateSourceVoltage(int nodeId, complexDouble newVoltage){
+	if((nodeId>=0)&&(nodeId<nodesUpToNow)){
 		SourceVoltage.real(nodeId) = newVoltage.real;
 		SourceVoltage.imag(nodeId) = newVoltage.imag;
 	}else{
@@ -60,52 +73,108 @@ GlobalCoupler::updateVoltageSource(int nodeId, complexDouble newVoltage){
 }
 
 void
-GlobalCoupler::updateCapacitance(int nodeId, double newCapacitance){
-	if((nodeId>=0)&&(nodeId<CapacitanceMatrix.nRow())){
-		CapacitanceMatrix(nodeId) = newCapacitance;
-	}else{
-		NS_LOG_UNCOND("GlobalCoupler: Invalid nodeId.");
+GlobalCoupler::void updateFrequency(double frequency){
+	if((frequency>=F_1KHZ)&&(frequency<=F_3MHZ))
+		w = 2*PI*frequency;
+	else{
+		NS_LOG_UNCOND("GlobalCoupler: The global resonant frequency must be between 1KHz and 3MHz.");
 		return;
 	}
 }
 
 void
 GlobalCoupler::updateResitance(int nodeId, double newResistance){
-	if((nodeId>=0)&&(nodeId<ResistanceMatrix.nRow())){
-		ResistanceMatrix(nodeId) = newResistance;
+	if((nodeId>=0)&&(nodeId<nodesUpToNow)){
+		if(newResistance>0.0)
+			partialZMatrix(nodeId, nodeId) = newResistance;
+		else{
+			NS_LOG_UNCOND("GlobalCoupler: The resistance must be a positive real number.");
+			return;
+		}
 	}else{
 		NS_LOG_UNCOND("GlobalCoupler: Invalid nodeId.");
 		return;
 	}
 }
 
-void
-GlobalCoupler::updateMutualCouplingMatrix(complexMatrix newMetrix){
+bool
+GlobalCoupler::updatePartialZMatrix(complexMatrix newMetrix){
 	if((newMetrix.rRow()==MutualCouplingMatrix.nRow())&&
 		(newMetrix.nCol()==MutualCouplingMatrix.nCol())){
 			MutualCouplingMatrix = newMetrix;
 	}else{
 		NS_LOG_UNCOND("GlobalCoupler: The size of the new matrix must agree with the old one.");
-		return;
+		return false;
 	}
+	return true;
 }
 
 void
 GlobalCoupler::calculateCurrents(){
 	int nNodes = MutualCouplingMatrix.nRow();
+	if(nNodes!=nodesUpToNow){
+		NS_LOG_UNCOND("GlobalCoupler: All nodes must be defined before any calculation.");
+		return;
+	}
 	complexMatrix Z, Z_inv;
 	Z.real = new Matrix(nNodes,nNodes);//creates the Z matrix
 	Z.imag = new Matrix(nNodes,nNodes);
 	Z_inv.real = new Matrix(nNodes,nNodes);//creates the inverse matrix
 	Z_inv.imag = new Matrix(nNodes,nNodes);
 
-	for(int i=0; i<MutualCouplingMatrix.nRow(); i++){
-		for(int j=0; j<MutualCouplingMatrix.nCol(); j++){
+	//calculates the Z matrix
+	for(int i=0; i<nNodes; i++){
+		for(int j=0; j<nNodes; j++){
 			if(i==j){
-
+				Z.real(i,j) = partialZMatrix(i,j);
+				Z.imag(i,j) = 0.0;//resonance ensures purely resistive impedance
 			}else{
-				Z.imag(i,j) = -
+				//multiplying the frequency and the permeability first helps to
+				//avoid imprecisions due very low values.
+				Z.imag(i,j) = -(w*env_permeability)*partialZMatrix(i,j)/(4*PI);
+				Z.real(i,j) = 0.0;
 			}
 		}
 	}
+	
+	//calculates the inverse of the matrix
+	cinv(Z.real, Z.imag, Z_inv.real, Z_inv.imag);
+	
+	for(int i=0; i<Current.real.nRow(); i++){
+		Current.real(i) = 0.0;
+		Current.imag(i) = 0.0;
+		for(int j=0; j<Z.real.nCol();j++){
+			Current.real(i) += SourceVoltage.real(j)*Z.real(i,j)
+				-SourceVoltage.imag(j)*Z.imag(i,j);
+			Current.imag(i) += SourceVoltage.real(j)*Z.imag(i,j)
+				+SourceVoltage.imag(j)*Z.real(i,j);
+		}
+	}
+}
+
+void 
+GlobalCoupler::calculateMutualInductance(int id1, int id2){
+	if((id1<0)||(id2<0)||(id1>=partialZMtrix.nRow())
+		||(id2>=partialZMtrix.nRow())){
+		NS_LOG_UNCOND("GlobalCoupler: Index of the partialZMatrix is out of the bounds.");
+		return;
+	}
+	partialZMatrix(id1,id2) = inductance_neuman(coilContainer[id1].getX(), 
+		coilContainer[id1].getY(), coilContainer[id1].getZ(),
+		coilContainer[id2].getX(), coilContainer[id2].getY(),
+		coilContainer[id2].getZ());
+	partialZMatrix(id2,id1) = partialZMatrix(id1,id2);
+}
+
+int
+GlobalCoupler::addNode(Coil& coil,double resistance, complexDouble sourceVoltage){
+	if(nNodes==nodesUpToNow){
+		NS_LOG_UNCOND("GlobalCoupler: All nodes yet have been defined.");
+		return -1;
+	}
+	allTheSame=false;
+	coilContainer[nodesUpToNow]=coil;
+	updateSourceVoltage(nodesUpToNow, sourceVoltage);
+	updateResitance(nodesUpToNow, resistance);
+	nodesUpToNow++;
 }

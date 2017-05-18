@@ -3,6 +3,7 @@
  *
  * MATLAB Coder version            : 3.1
  * C/C++ source code generated on  : 17-May-2017 11:29:01
+ * Mutual coupling without permeability and 1/4pi factors
  */
 
 /* Include Files */
@@ -998,7 +999,8 @@ double inductance_neuman(const emxArray_real_T *x1, const emxArray_real_T *b_y1,
   emxFree_real_T(&ye);
   emxFree_real_T(&xe);
   mtmp = sum(dx);
-  L = 1.0000000000000001E-7 * fabs(mtmp);
+  //L = 1.0000000000000001E-7 * fabs(mtmp);
+  L = fabs(mtmp);//Mutual coupling without permeability and 1/4pi factor
   emxFree_real_T(&dx);
   return L;
 }

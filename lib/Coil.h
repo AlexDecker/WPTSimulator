@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "inductance_neuman_emxAPI.h"
 
 Class Coil{
 
@@ -11,9 +12,9 @@ Class Coil{
 		//Creates a generic coil. Its geometry will be defined by interconnecting the (x,y,z) points with lines.
 		Coil(pointVector points, double wireRadius, double resistivity, double permeability);
 		//Creates a generic coil. Sets the internal resistence and selfInductance, instead of calculating it.
-		Coil(pointVector points, double resistance, double selfInductance);
+		Coil(pointVector points, double newResistance, double newL);
 		//Creates a spiral coil over the XY plane. The coil will be centered in the origin of the coordinates.
-		Coil(double innerRadius, double outterRadius, double nSpires, double wireRadius,
+		Coil(double innerRadius, double outterRadius, int nSpires, double wireRadius,
 			double resistivity, double permeability);
 	//Destructor
 		~Coil();
@@ -27,13 +28,19 @@ Class Coil{
 		double getInnerResistance();
 		double getSelfInductance();
 	//The points are public to facilitate the Mutual Inductance calculation
-		pointVector points;
+		emxArray_real_T* pointsX;
+		emxArray_real_T* pointsY;
+		emxArray_real_T* pointsZ;
 //*********************************************************************
 	private:
 		double wireRadius;
 		double resistance;
 		double selfInductance;
 
-		void calculateCoilSelfParams(Coil coil, double* inductance, double* resistence, double permeability);
-
+		void calculateCoilSelfParams(double permeability, double resistivity,
+			double wireRadius);
+		void setPointVector(pointVector points);//create and set the coil's geometry
+		void setInnerResitance(double newResistance);
+		void setSelfInductance(double newL);
+		void createCoil(double innerRadius, double outterRadius, int nSpires);
 };
