@@ -10,15 +10,24 @@ This file models the entire system as a set of resonant coupled RLC systems. "w"
 #include <stdlib.h>
 #include <math.h>
 
+#ifndef GLOBAL_COUPLER_H
+#define GLOBAL_COUPLER_H
+
 Class GlobalCoupler{
 
 	public:
 		static GlobalCoupler* getInstance(int nNodes=2, double permeability=DEFAULT_PERMEABILITY, double frequency=DEFAULT_FREQUENCY);
+		
 		complexDouble getCurrent(int nodeId);
+		double getCapacitance(int nodeId);//(mF)
 
 		void updateSourceVoltage(int nodeId, complexDouble newVoltage);
 		void updateFrequency(double frequency);
 		void updateResitance(int nodeId, double newResistance);
+		
+		void rotateCoil(int nodeId,AXIS axis, double teta);
+		void translateCoil(int nodeId, double dx, double dy, double dz);
+		
 		//returns the index of the coil in the container
 		int addNode(Coil& coil, double resistance, complexDouble sourceVoltage);
 //*********************************************************************
@@ -34,6 +43,7 @@ Class GlobalCoupler{
 	  	static Matrix partialZMatrix;//nxn matrix with the inductance between the i and j coils. The main diagonal holds the ohmic resistance of each system.
 	  	static complexMatrix SourceVoltage;//2x1xn matrix (voltage source phasor)
 	  	static complexMatrix Current;//2x1xn matrix
+		double w;//global angular frequency
 
 	  	static bool allTheSame=false;//flag that tells the system if the values must not be recalculated
 
@@ -43,4 +53,6 @@ Class GlobalCoupler{
 		void calculateCurrents();
 		bool updatePartialZMatrix(complexMatrix newMetrix);
 		void calculateMutualInductance(int id1, int id2);
+		void updateMutualInductances();
 };
+#endif

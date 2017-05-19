@@ -3,6 +3,9 @@
 #include <math.h>
 #include "inductance_neuman_emxAPI.h"
 
+#ifndef COIL_H
+#define COIL_H
+
 Class Coil{
 
 	public:
@@ -21,8 +24,10 @@ Class Coil{
 	//Geometric operations
 		//Rotates the coil counter-clockwise. The 'axis' param may be AXIS_X, AXIS_Y or AXIS_Z
 		void rotateCoil(AXIS axis, double teta);
-		
 		void translateCoil(double dx, double dy, double dz);
+		void setUpdated();//set if the mutual coupling between this coil and all
+		//the others is already up to date, after proceduring a geometric operation
+		bool isUpdated();
 	//Gets
 		pointVector getPointVector();
 		double getInnerResistance();
@@ -36,7 +41,9 @@ Class Coil{
 		double wireRadius;
 		double resistance;
 		double selfInductance;
-
+		
+		bool updated = false;
+		
 		void calculateCoilSelfParams(double permeability, double resistivity,
 			double wireRadius);
 		void setPointVector(pointVector points);//create and set the coil's geometry
@@ -44,3 +51,4 @@ Class Coil{
 		void setSelfInductance(double newL);
 		void createCoil(double innerRadius, double outterRadius, int nSpires);
 };
+#endif

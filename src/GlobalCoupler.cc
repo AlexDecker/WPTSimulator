@@ -49,6 +49,9 @@ complexDouble
 GlobalCoupler::getCurrent(int nodeId){
 	if((nodeId>=0)&&(nodeId<nodesUpToNow)){
 		
+		updateMutualInductances();//if the coils aren't modified, this command
+		//do nothing
+		
 		if(!allTheSame)calculateCurrents();//Check if it must to recalculate the values
 
 		complexDouble ret;
@@ -111,7 +114,7 @@ GlobalCoupler::updatePartialZMatrix(complexMatrix newMetrix){
 
 void
 GlobalCoupler::calculateCurrents(){
-	int nNodes = MutualCouplingMatrix.nRow();
+	int nNodes = partialZMatrix.nRow();
 	if(nNodes!=nodesUpToNow){
 		NS_LOG_UNCOND("GlobalCoupler: All nodes must be defined before any calculation.");
 		return;
@@ -153,17 +156,20 @@ GlobalCoupler::calculateCurrents(){
 }
 
 void 
-GlobalCoupler::calculateMutualInductance(int id1, int id2){
-	if((id1<0)||(id2<0)||(id1>=partialZMtrix.nRow())
-		||(id2>=partialZMtrix.nRow())){
-		NS_LOG_UNCOND("GlobalCoupler: Index of the partialZMatrix is out of the bounds.");
+GlobalCoupler::rotateCoil(int nodeId,AXIS axis, double teta){
+	if((nodeId<0)||(nodeId>=nodesUpToNow)){
+		NS_LOG_UNCOND("GlobalCoupler: Invalid nodeId.");
 		return;
 	}
-	partialZMatrix(id1,id2) = inductance_neuman(coilContainer[id1].getX(), 
-		coilContainer[id1].getY(), coilContainer[id1].getZ(),
-		coilContainer[id2].getX(), coilContainer[id2].getY(),
-		coilContainer[id2].getZ());
-	partialZMatrix(id2,id1) = partialZMatrix(id1,id2);
+	coilContainer[nodeId].rotateCoil(axis,teta);
+}
+
+GlobalCoupler::void translateCoil(int nodeId, double dx, double dy, double dz){
+	if((nodeId<0)||(nodeId>=nodesUpToNow)){
+		NS_LOG_UNCOND("GlobalCoupler: Invalid nodeId.");
+		return;
+	}
+	coilContainer[nodeId].translateCoil(axis,dx,dy,dz);
 }
 
 int
@@ -177,4 +183,53 @@ GlobalCoupler::addNode(Coil& coil,double resistance, complexDouble sourceVoltage
 	updateSourceVoltage(nodesUpToNow, sourceVoltage);
 	updateResitance(nodesUpToNow, resistance);
 	nodesUpToNow++;
+}
+
+void 
+GlobalCoupler::calculateMutualInductance(int id1, int id2){
+	if((id1<0)||(id2<0)||(id1>=partialZMtrix.nRow())
+		||(id2>=partialZMtrix.nRow())){
+		NS_LOG_UNCOND("GlobalCoupler: Index of the partialZMatrix is out of the bounds.");
+		return;
+	}
+	partialZMatrix(id1,id2) = inductance_neuman(coilContainer[id1].getX(), 
+		coilContainer[id1].getY(), coilContainer[id1].getZ(),
+		coilContainer[id2].getX(), coilContainer[id2].getY(),
+		coilContainer[id2].getZ());
+	partialZMatrix(id2,id1) = partialZMatrix(id1,id2);
+}
+
+void
+GlobalCoupler::updateMutualInductances(){
+	bool allTheSame=true;
+	int nNodes = partialZMatrix.nRow();//partialZMatrix is sqare
+	//the matrix is symmetric, so we must only calculate the inferior triangle
+	for(int i=0; i<nNodes; i++){
+		for(int j=0; j<i; j++){
+			if((!coilContainer[i].isUpdated())
+				||(!coilContainer[j].isUpdated()){
+				partialZMatrix(i,j) = calculateMutualInductance(i,j);
+				allTheSame=false;//if at least one coil is modified, all
+				//current calculations must be performed again next time.
+			}
+		}
+	}
+	//copy the correspondent values to the superior triangle
+	//and set the coils updated
+	for(int i=0; i<nNodes; i++){
+		coilContainer[i].setUpdated();
+		for(int j=i+1; j<nNodes-i; j++){
+			partialZMatrix(i,j) = partialZMatrix(j,i);
+		}
+	}
+}
+
+double
+getCapacitance(int nodeId){
+	double L = coilContainer[nodeId].getSelfInductance();
+	if(L==0.0){
+		NS_LOG_UNCOND("GlobalCoupler: ooil's self inductance cannot be zero.");
+		return 0.0;
+	}
+	return 1000.0/(L*(w*w));
 }

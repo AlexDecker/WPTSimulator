@@ -34,28 +34,41 @@ Coil::~Coil(){
 
 void
 Coil::rotateCoil(AXIS axis, double teta){
-
+	//if(teta!=0.0)updated=false;
+	//ToDo
 }
 
 void
 Coil::translateCoil(double dx, double dy, double dz){
 	if(dx!=0.0){
+		updated=false;
 		for (int i = 0; i < pointsX->size[1U]; i++) {
 			pointsX->data[pointsX->size[0] * i] += dx;
 		}
 	}
 	if(dy!=0.0){
+		updated=false;
 		for (int i = 0; i < pointsY->size[1U]; i++) {
 			pointsY->data[pointsY->size[0] * i] += dy;
 		}
 	}
 	if(dz!=0.0){
+		updated=false;
 		for (int i = 0; i < pointsZ->size[1U]; i++) {
 			pointsZ->data[pointsZ->size[0] * i] += dz;
 		}
 	}
 }
 
+void
+Coil::setUpdated(){
+	updated = true;
+}
+
+bool
+Coil::isUpdated(){
+	return updated;
+}
 
 void
 Coil::setPointVector(pointVector points){
