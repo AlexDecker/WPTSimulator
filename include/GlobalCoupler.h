@@ -1,10 +1,10 @@
 /*
-This file models the entire system as a set of resonant coupled RLC systems. "w" defines the angular frequency that all systems resonate. The capacitance of each system cannot be defined by the user, because is set in function of the coil's self inductance in order to maintein the resonance with the voltage source. During the runtime, the user can modify the global scalar frequency, the spacial params of the coil (orientation and position), the resistance of each system and each voltage source phasor.
+This file models the entire system as a set of resonant coupled RLC systems. "w" defines the angular frequency that all systems resonate. The capacitance of each system cannot be defined by the user, because is set in function of the coil's self inductance in order to maintein the resonance with the voltage source. During the runtime, the user can modify the spacial params of the coil (orientation and position), the resistance of each system and each voltage source phasor.
 */
 #include "constants.h"
-#include "../aux/Matrix.h"
-#include "../aux/cinv.h"
-#include "../aux/inductance/inductance_neuman.h"
+#include "Matrix.h"
+#include "cinv.h"
+#include "inductance_neuman.h"
 #include "Coil.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,7 +22,7 @@ Class GlobalCoupler{
 		double getCapacitance(int nodeId);//(mF)
 
 		void updateSourceVoltage(int nodeId, complexDouble newVoltage);
-		void updateFrequency(double frequency);
+		//void updateFrequency(double frequency);
 		void updateResitance(int nodeId, double newResistance);
 		
 		void rotateCoil(int nodeId,AXIS axis, double teta);
@@ -54,5 +54,6 @@ Class GlobalCoupler{
 		bool updatePartialZMatrix(complexMatrix newMetrix);
 		void calculateMutualInductance(int id1, int id2);
 		void updateMutualInductances();
+		void updateFrequency(double frequency);
 };
 #endif

@@ -1,4 +1,4 @@
-#include "../lib/Coil.h"
+#include "Coil.h"
 
 Coil::Coil(){
 	createCoil(DEFAULT_INNER_R, DEFAULT_OUTTER_R, DEFAULT_NSPIRES);

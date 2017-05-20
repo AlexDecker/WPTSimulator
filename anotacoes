@@ -21,3 +21,7 @@ Integração com o ns3:
 
 Indutância: O código feito em MATLAB foi adaptado para c através do CodeGen. A única função acessível fora do diretório em aux/inductance é inductance_neuman,
 que recebe como parâmetro uma estrutura de alocação dinâmica emxArray_real_T definida em rtwtypes.h. Para compilar com um exemplo já testado, troque os nomes main_exemplo.c e main_exemplo.h por main.[c/h] e faça gcc -o teste *.c -lm. 
+
+interface com o usuário.
+
+http://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/

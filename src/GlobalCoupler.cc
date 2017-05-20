@@ -1,4 +1,4 @@
-#include "../lib/GlobalCoupler.h"
+#include "GlobalCoupler.h"
 
 static GlobalCoupler*
 GlobalCoupler::getInstance(int nNodes=2, double permeability=DEFAULT_PERMEABILITY, double frequency=DEFAULT_FREQUENCY){
@@ -29,12 +29,10 @@ GlobalCoupler::getInstance(int nNodes=2, double permeability=DEFAULT_PERMEABILIT
 				NS_LOG_UNCOND("GlobalCoupler: The permeability must be more then 0.0.");
 				return NULL;
 			}
-			if((frequency>=F_1KHZ)&&(frequency<=F_3MHZ))
-				w = 2*PI*frequency;
-			else{
-				NS_LOG_UNCOND("GlobalCoupler: The global resonant frequency must be between 1KHz and 3MHz.");
-				return NULL;
-			}
+			
+			w = 2*PI*DEFAULT_FREQUENCY;
+			updateFrequency(frequency);
+			
 			Instance = new GlobalCoupler();
 			coilContainer = (Coil*)malloc(nNodes*sizeof(Coil));
 		}else{
@@ -129,7 +127,8 @@ GlobalCoupler::calculateCurrents(){
 	for(int i=0; i<nNodes; i++){
 		for(int j=0; j<nNodes; j++){
 			if(i==j){
-				Z.real(i,j) = partialZMatrix(i,j);
+				Z.real(i,j) = partialZMatrix(i,j)
+					+coilCOntainer[i].getInnerResistance();
 				Z.imag(i,j) = 0.0;//resonance ensures purely resistive impedance
 			}else{
 				//multiplying the frequency and the permeability first helps to

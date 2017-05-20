@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../aux/Matrix.h"
+#include "Matrix.h"
 
 typedef struct{
 	double x;
