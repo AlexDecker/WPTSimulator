@@ -26,7 +26,7 @@ GlobalCoupler::getInstance(int nNodes=2, double permeability=DEFAULT_PERMEABILIT
 			if(env_permeability>0.0)
 				env_permeability = permeability;
 			else{
-				NS_LOG_UNCOND("GlobalCoupler: The permeability must be more then 0.0.");
+				showError("GlobalCoupler: The permeability must be more then 0.0.");
 				return NULL;
 			}
 			
@@ -35,8 +35,9 @@ GlobalCoupler::getInstance(int nNodes=2, double permeability=DEFAULT_PERMEABILIT
 			
 			Instance = new GlobalCoupler();
 			coilContainer = (Coil*)malloc(nNodes*sizeof(Coil));
+			inductance_neuman_initialize();
 		}else{
-			NS_LOG_UNCOND("GlobalCoupler: Number of nodes must be greater then one.");
+			showError("GlobalCoupler: Number of nodes must be greater then one.");
 			return NULL;
 		}
 	}
@@ -57,8 +58,11 @@ GlobalCoupler::getCurrent(int nodeId){
 		ret.imag = Current.imag(nodeId);
 		return ret;
 	}else{
-		NS_LOG_UNCOND("GlobalCoupler: Invalid nodeId.");
-		return NULL;
+		showError("GlobalCoupler: Invalid nodeId.");
+		complexDouble ret;
+		ret.real = 0.0;
+		ret.imag = 0.0;
+		return ret;
 	}
 }
 
@@ -68,17 +72,17 @@ GlobalCoupler::updateSourceVoltage(int nodeId, complexDouble newVoltage){
 		SourceVoltage.real(nodeId) = newVoltage.real;
 		SourceVoltage.imag(nodeId) = newVoltage.imag;
 	}else{
-		NS_LOG_UNCOND("GlobalCoupler: Invalid nodeId.");
+		showError("GlobalCoupler: Invalid nodeId.");
 		return;
 	}
 }
 
 void
-GlobalCoupler::void updateFrequency(double frequency){
+GlobalCoupler::updateFrequency(double frequency){
 	if((frequency>=F_1KHZ)&&(frequency<=F_3MHZ))
 		w = 2*PI*frequency;
 	else{
-		NS_LOG_UNCOND("GlobalCoupler: The global resonant frequency must be between 1KHz and 3MHz.");
+		showError("GlobalCoupler: The global resonant frequency must be between 1KHz and 3MHz.");
 		return;
 	}
 }
@@ -89,11 +93,11 @@ GlobalCoupler::updateResitance(int nodeId, double newResistance){
 		if(newResistance>0.0)
 			partialZMatrix(nodeId, nodeId) = newResistance;
 		else{
-			NS_LOG_UNCOND("GlobalCoupler: The resistance must be a positive real number.");
+			showError("GlobalCoupler: The resistance must be a positive real number.");
 			return;
 		}
 	}else{
-		NS_LOG_UNCOND("GlobalCoupler: Invalid nodeId.");
+		showError("GlobalCoupler: Invalid nodeId.");
 		return;
 	}
 }
@@ -104,7 +108,7 @@ GlobalCoupler::updatePartialZMatrix(complexMatrix newMetrix){
 		(newMetrix.nCol()==MutualCouplingMatrix.nCol())){
 			MutualCouplingMatrix = newMetrix;
 	}else{
-		NS_LOG_UNCOND("GlobalCoupler: The size of the new matrix must agree with the old one.");
+		showError("GlobalCoupler: The size of the new matrix must agree with the old one.");
 		return false;
 	}
 	return true;
@@ -114,7 +118,7 @@ void
 GlobalCoupler::calculateCurrents(){
 	int nNodes = partialZMatrix.nRow();
 	if(nNodes!=nodesUpToNow){
-		NS_LOG_UNCOND("GlobalCoupler: All nodes must be defined before any calculation.");
+		showError("GlobalCoupler: All nodes must be defined before any calculation.");
 		return;
 	}
 	complexMatrix Z, Z_inv;
@@ -157,15 +161,16 @@ GlobalCoupler::calculateCurrents(){
 void 
 GlobalCoupler::rotateCoil(int nodeId,AXIS axis, double teta){
 	if((nodeId<0)||(nodeId>=nodesUpToNow)){
-		NS_LOG_UNCOND("GlobalCoupler: Invalid nodeId.");
+		showError("GlobalCoupler: Invalid nodeId.");
 		return;
 	}
 	coilContainer[nodeId].rotateCoil(axis,teta);
 }
 
-GlobalCoupler::void translateCoil(int nodeId, double dx, double dy, double dz){
+void
+GlobalCoupler::translateCoil(int nodeId, double dx, double dy, double dz){
 	if((nodeId<0)||(nodeId>=nodesUpToNow)){
-		NS_LOG_UNCOND("GlobalCoupler: Invalid nodeId.");
+		showError("GlobalCoupler: Invalid nodeId.");
 		return;
 	}
 	coilContainer[nodeId].translateCoil(axis,dx,dy,dz);
@@ -174,7 +179,7 @@ GlobalCoupler::void translateCoil(int nodeId, double dx, double dy, double dz){
 int
 GlobalCoupler::addNode(Coil& coil,double resistance, complexDouble sourceVoltage){
 	if(nNodes==nodesUpToNow){
-		NS_LOG_UNCOND("GlobalCoupler: All nodes yet have been defined.");
+		showError("GlobalCoupler: All nodes yet have been defined.");
 		return -1;
 	}
 	allTheSame=false;
@@ -188,7 +193,7 @@ void
 GlobalCoupler::calculateMutualInductance(int id1, int id2){
 	if((id1<0)||(id2<0)||(id1>=partialZMtrix.nRow())
 		||(id2>=partialZMtrix.nRow())){
-		NS_LOG_UNCOND("GlobalCoupler: Index of the partialZMatrix is out of the bounds.");
+		showError("GlobalCoupler: Index of the partialZMatrix is out of the bounds.");
 		return;
 	}
 	partialZMatrix(id1,id2) = inductance_neuman(coilContainer[id1].getX(), 
@@ -227,8 +232,29 @@ double
 getCapacitance(int nodeId){
 	double L = coilContainer[nodeId].getSelfInductance();
 	if(L==0.0){
-		NS_LOG_UNCOND("GlobalCoupler: ooil's self inductance cannot be zero.");
+		showError("GlobalCoupler: ooil's self inductance cannot be zero.");
 		return 0.0;
 	}
 	return 1000.0/(L*(w*w));
+}
+
+void
+GlobalCoupler::destroyEnvironment(){
+	inductance_neuman_terminate();
+	for(int i=0;i<nodesUpToNow;i++){
+		delete coilContainer[i];
+	}
+	free(coilContainer);
+	delete partialZMatrix;
+	delete SourceVoltage;
+	delete Current;
+}
+
+void
+GlobalCoupler::showError(const char* s){
+	#if NS3
+		NS_LOG_UNCOND(s);
+	#else
+		printf("%s\n",s);
+	#endif
 }

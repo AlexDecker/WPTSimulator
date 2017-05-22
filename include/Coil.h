@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "constants.h"
 #include "inductance_neuman_emxAPI.h"
 
 #ifndef COIL_H
 #define COIL_H
 
-Class Coil{
+class Coil{
 
 	public:
 	//Constructors
@@ -50,5 +51,6 @@ Class Coil{
 		void setInnerResitance(double newResistance);
 		void setSelfInductance(double newL);
 		void createCoil(double innerRadius, double outterRadius, int nSpires);
+		void showError(const char*  s);
 };
 #endif

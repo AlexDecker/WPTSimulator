@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "Matrix.h"
 
 typedef struct{
@@ -37,6 +38,7 @@ typedef struct{
 #define F_100KHZ (1.0e+5)
 #define F_1MHZ (1.0e+6)
 #define F_3MHZ (3.0e+6)
+#define NS3 0 //if 1, enable doxygen
 
 //default simulation values
 #define DEFAULT_CAPACITANCE (1.0e-6) //(Farad)

@@ -1,5 +1,6 @@
 #include "cinv.h"
 
+using namespace std;
 // Compute inverse of complex matrix
 void cinv( Matrix RealA, Matrix ImagA, 
 			 Matrix& RealAinv, Matrix& ImagAinv ) 

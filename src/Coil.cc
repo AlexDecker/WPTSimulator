@@ -19,7 +19,7 @@ Coil::Coil(pointVector points, double newResistance, double newL){
 Coil::Coil(double innerRadius, double outterRadius, int nSpires, double wireRadius,
 	double resistivity, double permeability){
 	if((innerRadius<=0.0)||(outterRadius<=innerRadius)||(nSpires<1)){
-		NS_LOG_UNCOND("Coil constructor: Wrong coil geometric params.");
+		showError("Coil constructor: Wrong coil geometric params.");
 		return;
 	}
 	createCoil(innerRadius, outterRadius, nSpires);
@@ -73,7 +73,7 @@ Coil::isUpdated(){
 void
 Coil::setPointVector(pointVector points){
 	if(points.size!=COIL_RESOLUTION){
-		NS_LOG_UNCOND("Coil constructor: Wrong coil resolution.");
+		showError("Coil constructor: Wrong coil resolution.");
 		return;
 	}
 	static int size[2] = { 1, COIL_RESOLUTION };
@@ -89,19 +89,19 @@ Coil::setPointVector(pointVector points){
 
 pointVector
 Coil::getPointVector(){
-	pointVector ret
-	ret.data = (pointVector) malloc(sizeof(point)*pointsX->size[1U]);
+	pointVector ret;
+	ret.data = (point*) malloc(sizeof(point)*pointsX->size[1U]);
 	for (int i = 0; i < pointsX->size[1U]; i++) {
-		ret[i].x = pointsX->data[pointsX->size[0] * i];
-		ret[i].y = pointsY->data[pointsY->size[0] * i];
-		ret[i].z = pointsZ->data[pointsZ->size[0] * i];
+		ret.data[i].x = pointsX->data[pointsX->size[0] * i];
+		ret.data[i].y = pointsY->data[pointsY->size[0] * i];
+		ret.data[i].z = pointsZ->data[pointsZ->size[0] * i];
 	}
 	return ret;
 }
 
 double
 Coil::getInnerResistance(){
-	return resitance;
+	return resistance;
 }
 
 double
@@ -114,7 +114,7 @@ Coil::setInnerResitance(double newResistance){
 	if(newResistance>0.0)
 		resistance = newResistance;
 	else{
-		NS_LOG_UNCOND("Coil constructor: The inner resistance must be a positive real number.");
+		showError("Coil constructor: The inner resistance must be a positive real number.");
 		return;
 	}
 }
@@ -124,7 +124,7 @@ Coil::setSelfInductance(double newL){
 	if(newL>0.0)
 		selfInductance = newL;
 	else{
-		NS_LOG_UNCOND("Coil constructor: The self inductance must be a positive real number.");
+		showError("Coil constructor: The self inductance must be a positive real number.");
 		return;
 	}
 }
@@ -154,4 +154,13 @@ void
 Coil::calculateCoilSelfParams(double permeability, double resistivity,
 	double wireRadius){
 	//ToDo
+}
+
+void
+Coil::showError(const char* s){
+	#if NS3
+		NS_LOG_UNCOND(s);
+	#else
+		printf("%s\n",s);
+	#endif
 }

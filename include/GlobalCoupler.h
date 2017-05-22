@@ -1,19 +1,24 @@
 /*
 This file models the entire system as a set of resonant coupled RLC systems. "w" defines the angular frequency that all systems resonate. The capacitance of each system cannot be defined by the user, because is set in function of the coil's self inductance in order to maintein the resonance with the voltage source. During the runtime, the user can modify the spacial params of the coil (orientation and position), the resistance of each system and each voltage source phasor.
 */
-#include "constants.h"
-#include "Matrix.h"
-#include "cinv.h"
-#include "inductance_neuman.h"
-#include "Coil.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stddef.h>
+#include <string.h>
+
+#include "rt_nonfinite.h"
+#include "rtwtypes.h"
+#include "inductance_neuman_types.h"
+#include "constants.h"
+#include "Matrix.h"
+#include "cinv.h"
+#include "Coil.h"
 
 #ifndef GLOBAL_COUPLER_H
 #define GLOBAL_COUPLER_H
 
-Class GlobalCoupler{
+class GlobalCoupler{
 
 	public:
 		static GlobalCoupler* getInstance(int nNodes=2, double permeability=DEFAULT_PERMEABILITY, double frequency=DEFAULT_FREQUENCY);
@@ -30,6 +35,8 @@ Class GlobalCoupler{
 		
 		//returns the index of the coil in the container
 		int addNode(Coil& coil, double resistance, complexDouble sourceVoltage);
+		
+		void destroyEnvironment();
 //*********************************************************************
 	private:
 		//(Singleton pattern issues)
@@ -55,5 +62,6 @@ Class GlobalCoupler{
 		void calculateMutualInductance(int id1, int id2);
 		void updateMutualInductances();
 		void updateFrequency(double frequency);
+		static void showError(const char*  s);
 };
 #endif

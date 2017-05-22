@@ -1,5 +1,5 @@
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include <assert.h>  
 #include <math.h>
 #include "Matrix.h"

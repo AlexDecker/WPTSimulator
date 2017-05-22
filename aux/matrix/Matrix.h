@@ -1,5 +1,8 @@
 #include <assert.h>  // Defines the assert function.
 
+#ifndef MATRIX_H
+#define MATRIX_H
+
 class Matrix {
 
 public:
@@ -91,3 +94,4 @@ void copy(const Matrix& mat) {
 
 }; // Class Matrix
 
+#endif
