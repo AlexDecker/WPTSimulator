@@ -10,6 +10,9 @@ This file models the entire system as a set of resonant coupled RLC systems. "w"
 #include "rt_nonfinite.h"
 #include "rtwtypes.h"
 #include "inductance_neuman_types.h"
+#include "inductance_neuman.h"
+#include "inductance_neuman_terminate.h"
+#include "inductance_neuman_initialize.h"
 #include "constants.h"
 #include "Matrix.h"
 #include "cinv.h"
@@ -21,7 +24,7 @@ This file models the entire system as a set of resonant coupled RLC systems. "w"
 class GlobalCoupler{
 
 	public:
-		static GlobalCoupler* getInstance(int nNodes=2, double permeability=DEFAULT_PERMEABILITY, double frequency=DEFAULT_FREQUENCY);
+		static GlobalCoupler* getInstance(int nNodes, double permeability, double frequency);
 		
 		complexDouble getCurrent(int nodeId);
 		double getCapacitance(int nodeId);//(mF)
@@ -43,25 +46,25 @@ class GlobalCoupler{
 		GlobalCoupler(){};  
 	  	GlobalCoupler(GlobalCoupler const&){};             // copy constructor is private
 	  	GlobalCoupler& operator=(GlobalCoupler const&){};  // assignment operator is private
-	  	static GlobalCoupler* Instance = NULL;
-		static int nodesUpToNow = 0;//number of nodes up to now
+	  	static GlobalCoupler* Instance;
+		static int nodesUpToNow;//number of nodes up to now
 
 	  	//Matrix for global kirchhoff estimations
-	  	static Matrix partialZMatrix;//nxn matrix with the inductance between the i and j coils. The main diagonal holds the ohmic resistance of each system.
+	  	static Matrix* partialZMatrix;//nxn matrix with the inductance between the i and j coils. The main diagonal holds the ohmic resistance of each system.
 	  	static complexMatrix SourceVoltage;//2x1xn matrix (voltage source phasor)
 	  	static complexMatrix Current;//2x1xn matrix
-		double w;//global angular frequency
+		static double w;//global angular frequency
 
-	  	static bool allTheSame=false;//flag that tells the system if the values must not be recalculated
+	  	static bool allTheSame;//flag that tells the system if the values must not be recalculated
 
 	  	static double env_permeability;
 	  	static Coil* coilContainer;//vector with all the coils of the environment
 
 		void calculateCurrents();
-		bool updatePartialZMatrix(complexMatrix newMetrix);
+		bool updatePartialZMatrix(Matrix& newMetrix);
 		void calculateMutualInductance(int id1, int id2);
 		void updateMutualInductances();
-		void updateFrequency(double frequency);
+		static void updateFrequency(double frequency);
 		static void showError(const char*  s);
 };
 #endif

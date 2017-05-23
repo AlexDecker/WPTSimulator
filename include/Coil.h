@@ -43,7 +43,7 @@ class Coil{
 		double resistance;
 		double selfInductance;
 		
-		bool updated = false;
+		bool updated;
 		
 		void calculateCoilSelfParams(double permeability, double resistivity,
 			double wireRadius);

@@ -1,15 +1,16 @@
-CC = g++
-MAIN = examples/main.cc
-INC_DIR = -I"include/" -I"aux/" -I"aux/inductance/"
 OUT_DIR = build
-CFLAGS = -lm
+CC = g++
+INC_DIR = -I"../include/" -I"../aux/matrix/" -I"../aux/inductance/"
 
-%.o: %.c
-	$(CC) -c -o $(OUT_DIR)/$@ $< $(INC_DIR) $(CFLAGS)
+all:
+	make -C aux/matrix/
+	make -C aux/inductance/
+	make -C src/
+	make -C examples/
+	$(CC) -o $(OUT_DIR)/example $(OUT_DIR)/*.o $(INC_DIR)
 
-all: main.o inductance.o
-	mkdir -p $(OUT_DIR)
-	$(CC) -o $(OUT_DIR)/test $(OUT_DIR)/$^ $(INC_DIR) $(CFLAGS)
-
+run:
+	cd build && ./example && cd ../
+	
 clean:
-	rm $(OUT_DIR)/*
+	rm -f $(OUT_DIR)/*.o

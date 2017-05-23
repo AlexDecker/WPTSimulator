@@ -3,17 +3,20 @@
 Coil::Coil(){
 	createCoil(DEFAULT_INNER_R, DEFAULT_OUTTER_R, DEFAULT_NSPIRES);
 	calculateCoilSelfParams(DEFAULT_PERMEABILITY, DEFAULT_RESISTIVITY, DEFAULT_WIRE_RADIUS);
+	updated = false;
 }
 
 Coil::Coil(pointVector points, double wireRadius, double resistivity, double permeability){
 	setPointVector(points);
 	calculateCoilSelfParams(permeability, resistivity, wireRadius);
+	updated = false;
 }
 
 Coil::Coil(pointVector points, double newResistance, double newL){
 	setPointVector(points);
 	setInnerResitance(newResistance);
 	setSelfInductance(newL);
+	updated = false;
 }
 
 Coil::Coil(double innerRadius, double outterRadius, int nSpires, double wireRadius,
@@ -24,6 +27,7 @@ Coil::Coil(double innerRadius, double outterRadius, int nSpires, double wireRadi
 	}
 	createCoil(innerRadius, outterRadius, nSpires);
 	calculateCoilSelfParams(permeability, resistivity, wireRadius);
+	updated = false;
 }
 
 Coil::~Coil(){

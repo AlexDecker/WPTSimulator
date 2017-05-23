@@ -3,6 +3,9 @@
 #include <string.h>
 #include "Matrix.h"
 
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
 typedef struct{
 	double x;
 	double y;
@@ -21,8 +24,8 @@ enum AXIS {
 };
 
 typedef struct{
-	Matrix imag;
-	Matrix real;
+	Matrix* imag;
+	Matrix* real;
 }complexMatrix;
 
 typedef struct{
@@ -41,7 +44,6 @@ typedef struct{
 #define NS3 0 //if 1, enable doxygen
 
 //default simulation values
-#define DEFAULT_CAPACITANCE (1.0e-6) //(Farad)
 #define DEFAULT_RESISTANCE  (50.0) //(Ohm)
 #define DEFAULT_MUTUAL_COUPLING (0.0) //(Henry)
 #define DEFAULT_SOURCE_VOLTAGE (1.0) //(Volt)
@@ -66,3 +68,5 @@ typedef struct{
 
 //magnetic permeability (N/A2)
 #define P_VACUUM (PI*4.0e-7)
+
+#endif
