@@ -73,8 +73,8 @@ GlobalCoupler::getCurrent(int nodeId){
 		if(!GlobalCoupler::allTheSame)calculateCurrents();//Check if it must to recalculate the values
 
 		complexDouble ret;
-		ret.real = (*GlobalCoupler::Current.real)(nodeId);
-		ret.imag = (*GlobalCoupler::Current.imag)(nodeId);
+		ret.real = (*GlobalCoupler::Current.real)(nodeId+1);
+		ret.imag = (*GlobalCoupler::Current.imag)(nodeId+1);
 		return ret;
 	}else{
 		showError("GlobalCoupler: Invalid nodeId.");
@@ -88,8 +88,8 @@ GlobalCoupler::getCurrent(int nodeId){
 void 
 GlobalCoupler::updateSourceVoltage(int nodeId, complexDouble newVoltage){
 	if((nodeId>=0)&&(nodeId<GlobalCoupler::nodesUpToNow)){
-		(*GlobalCoupler::SourceVoltage.real)(nodeId) = newVoltage.real;
-		(*GlobalCoupler::SourceVoltage.imag)(nodeId) = newVoltage.imag;
+		(*GlobalCoupler::SourceVoltage.real)(nodeId+1) = newVoltage.real;
+		(*GlobalCoupler::SourceVoltage.imag)(nodeId+1) = newVoltage.imag;
 	}else{
 		showError("GlobalCoupler: Invalid nodeId.");
 		return;
@@ -110,7 +110,7 @@ void
 GlobalCoupler::updateResitance(int nodeId, double newResistance){
 	if((nodeId>=0)&&(nodeId<GlobalCoupler::nodesUpToNow)){
 		if(newResistance>0.0)
-			(*GlobalCoupler::partialZMatrix)(nodeId, nodeId) = newResistance;
+			(*GlobalCoupler::partialZMatrix)(nodeId+1, nodeId+1) = newResistance;
 		else{
 			showError("GlobalCoupler: The resistance must be a positive real number.");
 			return;

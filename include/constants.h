@@ -54,7 +54,7 @@ typedef struct{
 //default coil params (m)
 #define DEFAULT_INNER_R (0.1)
 #define DEFAULT_OUTTER_R (0.2)
-#define DEFAULT_NSPIRES (10) //(adimensional)
+#define DEFAULT_NSPIRES (15) //(adimensional)
 #define DEFAULT_WIRE_RADIUS (0.001)
 
 //resistivity (mOHM*m) table at 20?C

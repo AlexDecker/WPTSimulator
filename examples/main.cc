@@ -15,7 +15,11 @@ int main(){
 	int id1 = GC->addNode(*C1,DEFAULT_RESISTANCE,source1);
 	int id2 = GC->addNode(*C2,DEFAULT_RESISTANCE,source2);
 	
-	printf("%d %d\n",id1,id2);
+	GC->translateCoil(id2, 0.0, 0.0, 0.1);
+	
+	complexDouble i = GC->getCurrent(id2);
+	
+	printf("%f,%f\n",i.real,i.imag);
 	
 	//cleaning everything
 	delete C1; delete C2;
