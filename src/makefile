@@ -7,4 +7,4 @@ CFLAGS = -lm
 	mkdir -p $(OUT_DIR)
 	$(CC) -c -o $(OUT_DIR)/$@ $^ $(INC_DIR) $(CFLAGS)
 
-all:Coil.o GlobalCoupler.o
+all:Coil.o GlobalCoupler.o Resonator.o
