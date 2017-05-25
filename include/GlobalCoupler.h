@@ -17,6 +17,7 @@ This file models the entire system as a set of resonant coupled RLC systems. "w"
 #include "Matrix.h"
 #include "cinv.h"
 #include "Coil.h"
+#include "util.h"
 
 #ifndef GLOBAL_COUPLER_H
 #define GLOBAL_COUPLER_H
@@ -66,6 +67,5 @@ class GlobalCoupler{
 		void calculateMutualInductance(int id1, int id2);
 		void updateMutualInductances();
 		static void updateFrequency(double frequency);
-		static void showError(const char*  s);
 };
 #endif

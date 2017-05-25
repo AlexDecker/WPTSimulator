@@ -1,37 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "Matrix.h"
-
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
-
-typedef struct{
-	double x;
-	double y;
-	double z;
-}point;
-
-typedef struct{
-	point* data;
-	int size;
-}pointVector;
-
-enum AXIS { 
-	AXIS_X,
-	AXIS_Y, 
-	AXIS_Z
-};
-
-typedef struct{
-	Matrix* imag;
-	Matrix* real;
-}complexMatrix;
-
-typedef struct{
-	double imag;
-	double real;
-}complexDouble;
 
 //various
 #define COIL_RESOLUTION (1000) //number of points that define a coil

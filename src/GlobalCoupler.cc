@@ -273,12 +273,3 @@ GlobalCoupler::destroyEnvironment(){
 	delete GlobalCoupler::SourceVoltage.imag;
 	delete GlobalCoupler::Current.imag;
 }
-
-void
-GlobalCoupler::showError(const char* s){
-	#if NS3
-		NS_LOG_UNCOND(s);
-	#else
-		printf("%s\n",s);
-	#endif
-}

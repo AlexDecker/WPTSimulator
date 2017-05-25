@@ -6,7 +6,7 @@ Resonator::Resonator(GlobalCoupler* environment, Coil& coil, double resistance,
 		GC = environment;
 		nodeId = GC->addNode(coil, resistance, sourceVoltage);
 	}else{
-		//showError
+		showError("Resonator: NULL environment.");
 	}
 }
 
