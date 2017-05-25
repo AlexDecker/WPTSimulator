@@ -1,5 +1,5 @@
 CC = g++
-INC_DIR = -I"../include" -I"../aux/matrix"
+INC_DIR = -I"../include" -I"../aux/matrix" -I"../aux/inductance"
 OUT_DIR = ../build
 CFLAGS = -lm
 %.o: %.cc

@@ -24,6 +24,7 @@ This file models the entire system as a set of resonant coupled RLC systems. "w"
 class GlobalCoupler{
 
 	public:
+		static GlobalCoupler* getInstance();
 		static GlobalCoupler* getInstance(int nNodes, double permeability, double frequency);
 		
 		complexDouble getCurrent(int nodeId);

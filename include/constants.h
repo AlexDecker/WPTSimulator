@@ -57,16 +57,16 @@ typedef struct{
 #define DEFAULT_NSPIRES (10) //(adimensional)
 #define DEFAULT_WIRE_RADIUS (0.001)
 
-//resistivity (ohm*m) table at 20ºC
+//resistivity (mOHM*m) table at 20?C
 //(http://hyperphysics.phy-astr.gsu.edu/hbase/Tables/rstiv.html)
-#define R_SILVER (1.59e-8)
-#define R_COPPER (1.68e-8)
-#define R_ALUMINIUM (2.65e-8)
-#define R_TUNGSTEN (5.6e-8)
-#define R_IRON (9.71e-8)
-#define R_PLATINUM (10.6e-8)
+#define R_SILVER (1.59e-5)
+#define R_COPPER (1.68e-5)
+#define R_ALUMINIUM (2.65e-5)
+#define R_TUNGSTEN (5.6e-5)
+#define R_IRON (9.71e-5)
+#define R_PLATINUM (10.6e-5)
 
-//magnetic permeability (N/A2)
-#define P_VACUUM (PI*4.0e-7)
+//magnetic permeability (mN/A2)
+#define P_VACUUM (PI*4.0e-4)
 
 #endif

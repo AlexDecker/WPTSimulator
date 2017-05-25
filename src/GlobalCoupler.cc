@@ -11,6 +11,15 @@ bool GlobalCoupler::allTheSame;
 double GlobalCoupler::env_permeability;
 Coil* GlobalCoupler::coilContainer;
 
+
+GlobalCoupler*
+GlobalCoupler::getInstance(){
+	if(GlobalCoupler::Instance==NULL){
+		showError("GlobalCoupler: You must specify the params in the first time you use this function.");
+	}
+	return GlobalCoupler::Instance;
+}
+
 GlobalCoupler*
 GlobalCoupler::getInstance(int nNodes, double permeability, double frequency){
 	if(GlobalCoupler::Instance==NULL){
@@ -30,7 +39,7 @@ GlobalCoupler::getInstance(int nNodes, double permeability, double frequency){
 		  	GlobalCoupler::Current.imag->set(0.0);
 		  	GlobalCoupler::Current.real->set(0.0);
 			
-			if(GlobalCoupler::env_permeability>0.0)
+			if(permeability>0.0)
 				GlobalCoupler::env_permeability = permeability;
 			else{
 				showError("GlobalCoupler: The permeability must be more then 0.0.");
@@ -117,11 +126,11 @@ GlobalCoupler::updatePartialZMatrix(Matrix& newMetrix){
 	if((newMetrix.nRow()==GlobalCoupler::partialZMatrix->nRow())&&
 		(newMetrix.nCol()==GlobalCoupler::partialZMatrix->nCol())){
 			(*GlobalCoupler::partialZMatrix) = newMetrix;
+			return true;
 	}else{
 		showError("GlobalCoupler: The size of the new matrix must agree with the old one.");
 		return false;
 	}
-	return true;
 }
 
 void
@@ -148,7 +157,10 @@ GlobalCoupler::calculateCurrents(){
 				//multiplying the frequency and the permeability first helps to
 				//avoid imprecisions due very low values.
 				(*Z.imag)(i+1,j+1) = -(GlobalCoupler::w * GlobalCoupler::env_permeability)
-										*(*partialZMatrix)(i+1,j+1)/(4*PI);
+										*(*partialZMatrix)(i+1,j+1)/(4*PI*1000);
+				//the 1/1000 factor is udes in order to control the precision of
+				//the calculations. The mN/A2 permeability (instead of N/A2) avoids
+				//the use of overly small numbers
 				(*Z.real)(i+1,j+1) = 0.0;
 			}
 		}
@@ -194,11 +206,13 @@ GlobalCoupler::addNode(Coil& coil,double resistance, complexDouble sourceVoltage
 		showError("GlobalCoupler: All nodes yet have been defined.");
 		return -1;
 	}
-	GlobalCoupler::allTheSame=false;
-	GlobalCoupler::coilContainer[GlobalCoupler::nodesUpToNow]=coil;
-	updateSourceVoltage(GlobalCoupler::nodesUpToNow, sourceVoltage);
-	updateResitance(GlobalCoupler::nodesUpToNow, resistance);
+	int id = GlobalCoupler::nodesUpToNow;
 	GlobalCoupler::nodesUpToNow++;
+	GlobalCoupler::allTheSame=false;
+	GlobalCoupler::coilContainer[id]=coil;
+	updateSourceVoltage(id, sourceVoltage);
+	updateResitance(id, resistance);
+	return id;
 }
 
 void 
