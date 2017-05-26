@@ -1,45 +1,51 @@
 #include "Resonator.h"
 
-Resonator::Resonator(GlobalCoupler* environment, Coil& coil, double resistance,
+Resonator::Resonator(Coil* coil, double resistance,
 	complexDouble sourceVoltage){
-	if(environment!=NULL){
-		GC = environment;
-		nodeId = GC->addNode(coil, resistance, sourceVoltage);
-	}else{
-		showError("Resonator: NULL environment.");
-	}
+	environment = GlobalCoupler::getInstance();
+	if(environment!=NULL)
+		if(coil!=NULL){
+			coilRef = coil;
+			nodeId = environment->addNode(*coil, resistance, sourceVoltage);
+		}else{
+			showError("Resonator: NULL coil.");
+		}
 }
 
 complexDouble
 Resonator::getCurrent(){
-	return GC->getCurrent(nodeId);
+	return environment->getCurrent(nodeId);
 }
 
 double
 Resonator::getCapacitance(){
-	return GC->getCapacitance(nodeId);
+	return environment->getCapacitance(nodeId);
 }
 
 void
 Resonator::updateSourceVoltage(complexDouble newVoltage){
-	GC->updateSourceVoltage(nodeId, newVoltage);
+	environment->updateSourceVoltage(nodeId, newVoltage);
 }
 
 /*void Resonator::requireGlobalFrequencyUpdate(double newFrequency){
-	GC->updateFrequency(newFrequency);
+	environment->updateFrequency(newFrequency);
 }*/
 
 void
 Resonator::updateResitance(double newResistance){
-	GC->updateResitance(nodeId, newResistance);
+	environment->updateResitance(nodeId, newResistance);
 }
 
 void
 Resonator::rotateCoil(AXIS axis, double teta){
-	GC->rotateCoil(nodeId, axis, teta);
+	environment->rotateCoil(nodeId, axis, teta);
 }
 
 void
 Resonator::translateCoil(double dx, double dy, double dz){
-	GC->translateCoil(nodeId, dx, dy, dz);
+	environment->translateCoil(nodeId, dx, dy, dz);
+}
+
+Resonator::~Resonator(){
+	delete coilRef;
 }

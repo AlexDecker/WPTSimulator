@@ -1,28 +1,22 @@
 /*Multiple examples to test all the new modules*/
 #include <stdio.h>
-#include "GlobalCoupler.h"
-#include "Coil.h"
+#include "example.h"
 
-int main(){
-	GlobalCoupler* GC = GlobalCoupler::getInstance(2, DEFAULT_PERMEABILITY, DEFAULT_FREQUENCY);//creating the environment
-	
-	Coil* C1 = new Coil(); Coil* C2 = new Coil();//creating default coils
-	
-	//setting voltage source configurations
-	complexDouble source1; source1.real = DEFAULT_SOURCE_VOLTAGE; source1.imag = 0.0;
-	complexDouble source2; source2.real = 0.0; source2.imag = 0.0;
-	
-	int id1 = GC->addNode(*C1,DEFAULT_RESISTANCE,source1);
-	int id2 = GC->addNode(*C2,DEFAULT_RESISTANCE,source2);
-	
-	GC->translateCoil(id2, 0.0, 0.0, 0.1);
-	
-	complexDouble i = GC->getCurrent(id2);
-	
-	printf("%f,%f\n",i.real,i.imag);
-	
-	//cleaning everything
-	delete C1; delete C2;
-	GC->destroyEnvironment();
+int main(int argc, char* argv[]){
+	if(argc!=2){
+		printf("Usage:\nmake EXAMPLE=\"[example_number]\" run\n or: ./standalone [example_number]\n");
+		return 0;
+	}
+	int ex = atoi(argv[1]);
+	switch(ex){
+		case 1:
+			example1();
+			break;
+		case 2:
+			example2();
+			break;
+		default:
+			printf("Example %s not found.\n",argv[1]);
+	}
 	return 0;
 }

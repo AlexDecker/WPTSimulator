@@ -10,19 +10,22 @@ own resonator systems.*/
 
 class Resonator{
 	public:
-		Resonator(GlobalCoupler* environment, Coil& coil, double resistance,
+		Resonator(Coil* coil, double resistance,
 			complexDouble sourceVoltage);
 		complexDouble getCurrent();
 		double getCapacitance();//(mF)
 
 		void updateSourceVoltage(complexDouble newVoltage);
-		//void requireGlobalFrequencyUpdate(double newFrequency);
+		void requireGlobalFrequencyUpdate(double newFrequency);
 		void updateResitance(double newResistance);
 		
 		void rotateCoil(AXIS axis, double teta);
 		void translateCoil(double dx, double dy, double dz);
+		
+		~Resonator();
 	private:
-		GlobalCoupler* GC;
+		GlobalCoupler* environment;
+		Coil* coilRef;
 		int nodeId;
 };
 #endif

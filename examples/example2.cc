@@ -1,7 +1,7 @@
 //Simple example to set default resonators and calculate the current on RX
 #include "example.h"
 
-void example1(){
+void example2(){
 	
 	GlobalCoupler* GC = GlobalCoupler::getInstance(2, DEFAULT_PERMEABILITY, DEFAULT_FREQUENCY);//creating the environment
 	

@@ -32,7 +32,7 @@ class GlobalCoupler{
 		double getCapacitance(int nodeId);//(mF)
 
 		void updateSourceVoltage(int nodeId, complexDouble newVoltage);
-		//void updateFrequency(double frequency);
+		static void updateFrequency(double frequency);
 		void updateResitance(int nodeId, double newResistance);
 		
 		void rotateCoil(int nodeId,AXIS axis, double teta);
@@ -66,6 +66,5 @@ class GlobalCoupler{
 		bool updatePartialZMatrix(Matrix& newMetrix);
 		void calculateMutualInductance(int id1, int id2);
 		void updateMutualInductances();
-		static void updateFrequency(double frequency);
 };
 #endif

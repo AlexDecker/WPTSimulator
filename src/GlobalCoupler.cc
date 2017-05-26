@@ -273,3 +273,4 @@ GlobalCoupler::destroyEnvironment(){
 	delete GlobalCoupler::SourceVoltage.imag;
 	delete GlobalCoupler::Current.imag;
 }
+
