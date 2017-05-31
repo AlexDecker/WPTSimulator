@@ -1,4 +1,5 @@
 #include "GlobalCoupler.h"
+#include <ctime>
 
 
 GlobalCoupler* GlobalCoupler::Instance = NULL;
@@ -156,8 +157,8 @@ GlobalCoupler::calculateCurrents(){
 			}else{
 				//multiplying the frequency and the permeability first helps to
 				//avoid imprecisions due very low values.
-				(*Z.imag)(i+1,j+1) = -(GlobalCoupler::w * GlobalCoupler::env_permeability)
-										*(*partialZMatrix)(i+1,j+1)/(4*PI*1000);
+				(*Z.imag)(i+1,j+1) = -(GlobalCoupler::w * GlobalCoupler::env_permeability)/1000
+										*(*partialZMatrix)(i+1,j+1)/(4*PI);
 				//the 1/1000 factor is udes in order to control the precision of
 				//the calculations. The mN/A2 permeability (instead of N/A2) avoids
 				//the use of overly small numbers
@@ -217,6 +218,10 @@ GlobalCoupler::addNode(Coil& coil,double resistance, complexDouble sourceVoltage
 
 void 
 GlobalCoupler::calculateMutualInductance(int id1, int id2){
+	#if VERBOSE
+		using namespace std;
+		clock_t begin = clock();
+	#endif
 	if((id1<0)||(id2<0)||(id1>=GlobalCoupler::partialZMatrix->nRow())
 		||(id2>=GlobalCoupler::partialZMatrix->nRow())){
 		showError("GlobalCoupler: Index of the partialZMatrix is out of the bounds.");
@@ -226,6 +231,13 @@ GlobalCoupler::calculateMutualInductance(int id1, int id2){
 		GlobalCoupler::coilContainer[id1].pointsY, GlobalCoupler::coilContainer[id1].pointsZ,
 		GlobalCoupler::coilContainer[id2].pointsX, GlobalCoupler::coilContainer[id2].pointsY,
 		GlobalCoupler::coilContainer[id2].pointsZ);
+		
+	#if VERBOSE
+		clock_t end = clock();
+		double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+		printf("(%d,%d) %f %.4f| ", id1, id2, GlobalCoupler::env_permeability
+			*100*(*partialZMatrix)(id1+1,id2+1)/(4*PI),elapsed_secs);
+	#endif
 }
 
 void

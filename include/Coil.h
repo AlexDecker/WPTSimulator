@@ -21,6 +21,9 @@ class Coil{
 		//Creates a spiral coil over the XY plane. The coil will be centered in the origin of the coordinates.
 		Coil(double innerRadius, double outterRadius, int nSpires, double wireRadius,
 			double resistivity, double permeability);
+		//Creates a solenoid coil
+		Coil(double radius, int nSpires, double pitch, double wireRadius,
+			double resistivity, double permeability);
 	//Destructor
 		~Coil();
 	//Geometric operations

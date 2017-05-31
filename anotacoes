@@ -19,8 +19,8 @@ Integração com o ns3:
 		criado o arquivo exemplo WPT.cc no mesmo diretório
 		(para build, "./waf", para run, "./waf --run WPT")
 
-Indutância: O código feito em MATLAB foi adaptado para c através do CodeGen. A única função acessível fora do diretório em aux/inductance é inductance_neuman,
-que recebe como parâmetro uma estrutura de alocação dinâmica emxArray_real_T definida em rtwtypes.h. Para compilar com um exemplo já testado, troque os nomes main_exemplo.c e main_exemplo.h por main.[c/h] e faça gcc -o teste *.c -lm. 
+Indutância: O código feito em MATLAB foi adaptado para c através do CodeGen.
+	ToDo: manter um vetor de translação em cada coil e atualizar a indutância mútua de a posição relativa mudar
 
 interface com o usuário.
 

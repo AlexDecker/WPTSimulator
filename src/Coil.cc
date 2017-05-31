@@ -22,10 +22,33 @@ Coil::Coil(pointVector points, double newResistance, double newL){
 Coil::Coil(double innerRadius, double outterRadius, int nSpires, double wireRadius,
 	double resistivity, double permeability){
 	if((innerRadius<=0.0)||(outterRadius<=innerRadius)||(nSpires<1)){
-		showError("Coil constructor: Wrong coil geometric params.");
+		showError("Coil constructor: Wrong geometric coil params.");
 		return;
 	}
 	createCoil(innerRadius, outterRadius, nSpires);
+	calculateCoilSelfParams(permeability, resistivity, wireRadius);
+	updated = false;
+}
+
+Coil::Coil(double radius, int nSpires, double pitch, double wireRadius,
+	double resistivity, double permeability){
+	if((radius<=0.0)||(pitch<=0.0)||(nSpires<1)){
+		showError("Coil constructor: Wrong geometric coil params.");
+		return;
+	}
+	
+	static int size[2] = { 1, COIL_RESOLUTION };
+	pointsX = emxCreateND_real_T(2, size);
+	pointsY = emxCreateND_real_T(2, size);
+	pointsZ = emxCreateND_real_T(2, size);
+	
+	double teta = 0; double teta1 = 2*PI*nSpires; double delta = teta1/COIL_RESOLUTION;
+	for(int i=0;i<COIL_RESOLUTION;i++){
+		pointsX->data[pointsX->size[0] * i] = radius*cos(teta);
+		pointsY->data[pointsY->size[0] * i] = radius*sin(teta);
+		pointsZ->data[pointsZ->size[0] * i] = teta/(2*PI)*pitch;
+		teta = (teta+delta>teta1)?teta1:teta+delta;
+	}
 	calculateCoilSelfParams(permeability, resistivity, wireRadius);
 	updated = false;
 }
@@ -38,8 +61,57 @@ Coil::~Coil(){
 
 void
 Coil::rotateCoil(AXIS axis, double teta){
-	//if(teta!=0.0)updated=false;
-	//ToDo
+	int x,y,z,x1,y1,z1;
+	if(teta!=0.0){
+		updated=false;
+		switch(axis){
+			case AXIS_X:
+				for (int i = 0; i < pointsX->size[1U]; i++) {
+					x = pointsX->data[pointsX->size[0] * i];
+					y = pointsY->data[pointsY->size[0] * i];
+					z = pointsZ->data[pointsZ->size[0] * i];
+					
+					x1 = x;
+					y1 = cos(teta)*y-sin(teta)*z;
+					z1 = sin(teta)*y+cos(teta)*z;
+					
+					pointsX->data[pointsX->size[0] * i] = x1;
+					pointsY->data[pointsY->size[0] * i] = y1;
+					pointsZ->data[pointsZ->size[0] * i] = z1;
+				}
+				break;
+			case AXIS_Y:
+				for (int i = 0; i < pointsX->size[1U]; i++) {
+					x = pointsX->data[pointsX->size[0] * i];
+					y = pointsY->data[pointsY->size[0] * i];
+					z = pointsZ->data[pointsZ->size[0] * i];
+					
+					x1 = cos(teta)*x+sin(teta)*z;
+					y1 = y;
+					z1 = -sin(teta)*x+cos(teta)*z;
+					
+					pointsX->data[pointsX->size[0] * i] = x1;
+					pointsY->data[pointsY->size[0] * i] = y1;
+					pointsZ->data[pointsZ->size[0] * i] = z1;
+				}
+				break;
+			case AXIS_Z:
+				for (int i = 0; i < pointsX->size[1U]; i++) {
+					x = pointsX->data[pointsX->size[0] * i];
+					y = pointsY->data[pointsY->size[0] * i];
+					z = pointsZ->data[pointsZ->size[0] * i];
+					
+					x1 = cos(teta)*x-sin(teta)*y;
+					y1 = sin(teta)*x+cos(teta)*y;
+					z1 = z;
+					
+					pointsX->data[pointsX->size[0] * i] = x1;
+					pointsY->data[pointsY->size[0] * i] = y1;
+					pointsZ->data[pointsZ->size[0] * i] = z1;
+				}
+				break;
+		}
+	}
 }
 
 void
