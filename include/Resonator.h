@@ -2,6 +2,7 @@
 own resonator systems.*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include "GlobalCoupler.h"
 #include "Coil.h"
 
@@ -10,10 +11,11 @@ own resonator systems.*/
 
 class Resonator{
 	public:
-		Resonator(Coil* coil, double resistance,
-			complexDouble sourceVoltage);
+		Resonator(Coil* coil, double newResistance,
+			complexDouble newSourceVoltage);
 		complexDouble getCurrent();
 		double getCapacitance();//(mF)
+		double getPower();
 
 		void updateSourceVoltage(complexDouble newVoltage);
 		void requireGlobalFrequencyUpdate(double newFrequency);
@@ -27,5 +29,7 @@ class Resonator{
 		GlobalCoupler* environment;
 		Coil* coilRef;
 		int nodeId;
+		//useful to calculate the power
+		double resistance;
 };
 #endif

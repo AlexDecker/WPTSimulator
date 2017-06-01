@@ -229,6 +229,10 @@ Coil::createCoil(double innerRadius, double outterRadius, int nSpires){
 void
 Coil::calculateCoilSelfParams(double permeability, double resistivity,
 	double wireRadius){
+	//default:
+	wireRadius = 0.0;
+	resistance = 0.0;
+	selfInductance = 0.0;
 	//PRECISION CONTROL:
 	//the resistance must be multiplied by 0.001 because of the mOHM*m resistivity
 	//the same must be done for the selfInductace, because of the same reason

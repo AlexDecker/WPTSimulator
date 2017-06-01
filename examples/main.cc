@@ -15,6 +15,9 @@ int main(int argc, char* argv[]){
 		case 2:
 			example2();
 			break;
+		case 3:
+			example3();
+			break;
 		default:
 			printf("Example %s not found.\n",argv[1]);
 	}

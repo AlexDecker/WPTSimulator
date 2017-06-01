@@ -40,9 +40,9 @@ GlobalCoupler::getInstance(int nNodes, double permeability, double frequency){
 		  	GlobalCoupler::Current.imag->set(0.0);
 		  	GlobalCoupler::Current.real->set(0.0);
 			
-			if(permeability>0.0)
+			if(permeability>0.0){
 				GlobalCoupler::env_permeability = permeability;
-			else{
+			}else{
 				showError("GlobalCoupler: The permeability must be more then 0.0.");
 				return NULL;
 			}
@@ -91,6 +91,7 @@ GlobalCoupler::updateSourceVoltage(int nodeId, complexDouble newVoltage){
 	if((nodeId>=0)&&(nodeId<GlobalCoupler::nodesUpToNow)){
 		(*GlobalCoupler::SourceVoltage.real)(nodeId+1) = newVoltage.real;
 		(*GlobalCoupler::SourceVoltage.imag)(nodeId+1) = newVoltage.imag;
+		GlobalCoupler::allTheSame = false;
 	}else{
 		showError("GlobalCoupler: Invalid nodeId.");
 		return;
@@ -99,9 +100,10 @@ GlobalCoupler::updateSourceVoltage(int nodeId, complexDouble newVoltage){
 
 void
 GlobalCoupler::updateFrequency(double frequency){
-	if((frequency>=F_1KHZ)&&(frequency<=F_3MHZ))
+	if((frequency>=F_1KHZ)&&(frequency<=F_3MHZ)){
 		GlobalCoupler::w = 2*PI*frequency;
-	else{
+		GlobalCoupler::allTheSame = false;
+	}else{
 		showError("GlobalCoupler: The global resonant frequency must be between 1KHz and 3MHz.");
 		return;
 	}
@@ -110,9 +112,10 @@ GlobalCoupler::updateFrequency(double frequency){
 void
 GlobalCoupler::updateResitance(int nodeId, double newResistance){
 	if((nodeId>=0)&&(nodeId<GlobalCoupler::nodesUpToNow)){
-		if(newResistance>0.0)
+		if(newResistance>0.0){
 			(*GlobalCoupler::partialZMatrix)(nodeId+1, nodeId+1) = newResistance;
-		else{
+			GlobalCoupler::allTheSame = false;
+		}else{
 			showError("GlobalCoupler: The resistance must be a positive real number.");
 			return;
 		}
@@ -127,6 +130,10 @@ GlobalCoupler::updatePartialZMatrix(Matrix& newMetrix){
 	if((newMetrix.nRow()==GlobalCoupler::partialZMatrix->nRow())&&
 		(newMetrix.nCol()==GlobalCoupler::partialZMatrix->nCol())){
 			(*GlobalCoupler::partialZMatrix) = newMetrix;
+			GlobalCoupler::allTheSame = false;
+			for(int i=0;i<GlobalCoupler::nodesUpToNow;i++){
+				coilContainer[i].setUpdated();
+			}
 			return true;
 	}else{
 		showError("GlobalCoupler: The size of the new matrix must agree with the old one.");
@@ -141,6 +148,7 @@ GlobalCoupler::calculateCurrents(){
 		showError("GlobalCoupler: All nodes must be defined before any calculation.");
 		return;
 	}
+	
 	complexMatrix Z, Z_inv;
 	Z.real = new Matrix(nNodes,nNodes);//creates the Z matrix
 	Z.imag = new Matrix(nNodes,nNodes);
@@ -159,7 +167,7 @@ GlobalCoupler::calculateCurrents(){
 				//avoid imprecisions due very low values.
 				(*Z.imag)(i+1,j+1) = -(GlobalCoupler::w * GlobalCoupler::env_permeability)/1000
 										*(*partialZMatrix)(i+1,j+1)/(4*PI);
-				//the 1/1000 factor is udes in order to control the precision of
+				//the 1/1000 factor is used in order to control the precision of
 				//the calculations. The mN/A2 permeability (instead of N/A2) avoids
 				//the use of overly small numbers
 				(*Z.real)(i+1,j+1) = 0.0;
@@ -173,13 +181,15 @@ GlobalCoupler::calculateCurrents(){
 	for(int i=1; i<=GlobalCoupler::Current.real->nRow(); i++){
 		(*GlobalCoupler::Current.real)(i) = 0.0;
 		(*GlobalCoupler::Current.imag)(i) = 0.0;
-		for(int j=1; j<=Z.real->nCol();j++){
-			(*GlobalCoupler::Current.real)(i) += (*GlobalCoupler::SourceVoltage.real)(j)*(*Z.real)(i,j)
-				-(*GlobalCoupler::SourceVoltage.imag)(j)*(*Z.imag)(i,j);
-			(*GlobalCoupler::Current.imag)(i) += (*GlobalCoupler::SourceVoltage.real)(j)*(*Z.imag)(i,j)
-				+(*GlobalCoupler::SourceVoltage.imag)(j)*(*Z.real)(i,j);
+		for(int j=1; j<=Z_inv.real->nCol();j++){
+			(*GlobalCoupler::Current.real)(i) += (*GlobalCoupler::SourceVoltage.real)(j)*(*Z_inv.real)(i,j)
+				-(*GlobalCoupler::SourceVoltage.imag)(j)*(*Z_inv.imag)(i,j);
+			(*GlobalCoupler::Current.imag)(i) += (*GlobalCoupler::SourceVoltage.real)(j)*(*Z_inv.imag)(i,j)
+				+(*GlobalCoupler::SourceVoltage.imag)(j)*(*Z_inv.real)(i,j);
 		}
 	}
+	
+	GlobalCoupler::allTheSame=true;
 }
 
 void 
@@ -189,6 +199,7 @@ GlobalCoupler::rotateCoil(int nodeId,AXIS axis, double teta){
 		return;
 	}
 	GlobalCoupler::coilContainer[nodeId].rotateCoil(axis,teta);
+	GlobalCoupler::allTheSame = false;
 }
 
 void
@@ -198,6 +209,7 @@ GlobalCoupler::translateCoil(int nodeId, double dx, double dy, double dz){
 		return;
 	}
 	GlobalCoupler::coilContainer[nodeId].translateCoil(dx,dy,dz);
+	GlobalCoupler::allTheSame = false;
 }
 
 int
@@ -227,6 +239,7 @@ GlobalCoupler::calculateMutualInductance(int id1, int id2){
 		showError("GlobalCoupler: Index of the partialZMatrix is out of the bounds.");
 		return;
 	}
+	//
 	(*partialZMatrix)(id1+1,id2+1) = inductance_neuman(GlobalCoupler::coilContainer[id1].pointsX, 
 		GlobalCoupler::coilContainer[id1].pointsY, GlobalCoupler::coilContainer[id1].pointsZ,
 		GlobalCoupler::coilContainer[id2].pointsX, GlobalCoupler::coilContainer[id2].pointsY,
@@ -235,14 +248,13 @@ GlobalCoupler::calculateMutualInductance(int id1, int id2){
 	#if VERBOSE
 		clock_t end = clock();
 		double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-		printf("(%d,%d) %f %.4f| ", id1, id2, GlobalCoupler::env_permeability
-			*100*(*partialZMatrix)(id1+1,id2+1)/(4*PI),elapsed_secs);
+		printf("<Between coils %d and %d:: %f (x10-5H) time: %.4f (s) pure partialZMatrix value: %f| ", id1, id2, GlobalCoupler::env_permeability
+			*100*(*partialZMatrix)(id1+1,id2+1)/(4*PI),elapsed_secs, (*partialZMatrix)(id1+1,id2+1));
 	#endif
 }
 
 void
 GlobalCoupler::updateMutualInductances(){
-	GlobalCoupler::allTheSame=true;
 	int nNodes = GlobalCoupler::partialZMatrix->nRow();//partialZMatrix is sqare
 	//the matrix is symmetric, so we must only calculate the inferior triangle
 	for(int i=0; i<nNodes; i++){

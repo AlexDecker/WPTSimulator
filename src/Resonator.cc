@@ -1,12 +1,14 @@
 #include "Resonator.h"
 
-Resonator::Resonator(Coil* coil, double resistance,
-	complexDouble sourceVoltage){
+Resonator::Resonator(Coil* coil, double newResistance,
+	complexDouble newSourceVoltage){
 	environment = GlobalCoupler::getInstance();
 	if(environment!=NULL)
 		if(coil!=NULL){
 			coilRef = coil;
-			nodeId = environment->addNode(*coil, resistance, sourceVoltage);
+			nodeId = environment->addNode(*coil, newResistance,
+				newSourceVoltage);
+			resistance = newResistance;
 		}else{
 			showError("Resonator: NULL coil.");
 		}
@@ -22,18 +24,25 @@ Resonator::getCapacitance(){
 	return environment->getCapacitance(nodeId);
 }
 
+double
+Resonator::getPower(){
+	complexDouble i = getCurrent();
+	return resistance*(pow(i.imag,2)+pow(i.real,2));
+}
+
 void
 Resonator::updateSourceVoltage(complexDouble newVoltage){
 	environment->updateSourceVoltage(nodeId, newVoltage);
 }
 
-/*void Resonator::requireGlobalFrequencyUpdate(double newFrequency){
+void Resonator::requireGlobalFrequencyUpdate(double newFrequency){
 	environment->updateFrequency(newFrequency);
-}*/
+}
 
 void
 Resonator::updateResitance(double newResistance){
 	environment->updateResitance(nodeId, newResistance);
+	resistance = newResistance;
 }
 
 void
