@@ -17,15 +17,24 @@ void initializeDefaultMatrix(double L, Matrix& M){
 }
 
 Matrix** initiateDefaultData(){
-	Matrix** DATA = (Matrix**)malloc(7*sizeof(Matrix*));
-	for(int i=0;i<7;i++) DATA[i] = new Matrix(2,2);
-	initializeDefaultMatrix(835.467225,*(DATA[0]));
-	initializeDefaultMatrix(470.738684,*(DATA[1]));
-	initializeDefaultMatrix(287.711538,*(DATA[2]));
-	initializeDefaultMatrix(185.318196,*(DATA[3]));
-	initializeDefaultMatrix(124.454980,*(DATA[4]));
-	initializeDefaultMatrix(86.610612,*(DATA[5]));
-	initializeDefaultMatrix(62.170492,*(DATA[6]));
+	Matrix** DATA = (Matrix**)malloc(16*sizeof(Matrix*));
+	for(int i=0;i<16;i++) DATA[i] = new Matrix(2,2);
+	initializeDefaultMatrix(1281.374556,*(DATA[0]));
+	initializeDefaultMatrix(952.978198,*(DATA[1]));
+	initializeDefaultMatrix(737.752150,*(DATA[2]));
+	initializeDefaultMatrix(584.601991,*(DATA[3]));
+	initializeDefaultMatrix(470.738684,*(DATA[4]));
+	initializeDefaultMatrix(383.738334,*(DATA[5]));
+	initializeDefaultMatrix(315.995942,*(DATA[6]));
+	initializeDefaultMatrix(262.497953,*(DATA[7]));
+	initializeDefaultMatrix(219.769836,*(DATA[8]));
+	initializeDefaultMatrix(185.318196,*(DATA[9]));
+	initializeDefaultMatrix(157.308239,*(DATA[10]));
+	initializeDefaultMatrix(134.364359,*(DATA[11]));
+	initializeDefaultMatrix(115.440249,*(DATA[12]));
+	initializeDefaultMatrix(99.730825,*(DATA[13]));
+	initializeDefaultMatrix(86.610612,*(DATA[14]));
+	initializeDefaultMatrix(75.589621,*(DATA[15]));
 	return DATA;
 }
 #endif
@@ -63,12 +72,12 @@ void example3(){
 	#else
 		RX->translateCoil(0.0, 0.0, length);//translate the length of the coil, so the coils start side by side
 	#endif
-	for(double i=0.02;i<=0.32;i+=0.05){
+	for(double i=0.02;i<=0.32;i+=0.02){
 		#if USE_DEFAULT_DATA
 			GC->updatePartialZMatrix(*(DATA[j]));//o erro está nessa chamada
 			j++;
 		#else
-			RX->translateCoil(0.0, 0.0, 0.05);
+			RX->translateCoil(0.0, 0.0, 0.02);
 		#endif
 		printf(" TX: %f W | RX: %f W\n", TX->getPower(),RX->getPower());
 	}
