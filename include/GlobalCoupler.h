@@ -51,6 +51,7 @@ class GlobalCoupler{
 	  	GlobalCoupler& operator=(GlobalCoupler const&){};  // assignment operator is private
 	  	static GlobalCoupler* Instance;
 		static int nodesUpToNow;//number of nodes up to now
+		static bool terminated;//true if the simulation already has finished
 
 	  	//Matrix for global kirchhoff estimations
 	  	static Matrix* partialZMatrix;//nxn matrix with the inductance between the i and j coils. The main diagonal holds the ohmic resistance of each system.

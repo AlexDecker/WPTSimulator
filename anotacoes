@@ -24,4 +24,6 @@ Indutância: O código feito em MATLAB foi adaptado para c através do CodeGen.
 
 interface com o usuário.
 
+->garantir que deletar e configurar o ambiente mais de uma vez não sejam um problema
+
 http://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/

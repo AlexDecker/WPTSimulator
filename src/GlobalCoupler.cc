@@ -11,6 +11,7 @@ double GlobalCoupler::w;
 bool GlobalCoupler::allTheSame;
 double GlobalCoupler::env_permeability;
 Coil* GlobalCoupler::coilContainer;
+bool GlobalCoupler::terminated = false;
 
 
 GlobalCoupler*
@@ -289,12 +290,15 @@ GlobalCoupler::getCapacitance(int nodeId){
 
 void
 GlobalCoupler::destroyEnvironment(){
-	inductance_neuman_terminate();
-	free(GlobalCoupler::coilContainer);
-	delete GlobalCoupler::partialZMatrix;
-	delete GlobalCoupler::SourceVoltage.real;
-	delete GlobalCoupler::Current.real;
-	delete GlobalCoupler::SourceVoltage.imag;
-	delete GlobalCoupler::Current.imag;
+	if(!GlobalCoupler::terminated){
+		inductance_neuman_terminate();
+		free(GlobalCoupler::coilContainer);
+		delete GlobalCoupler::partialZMatrix;
+		delete GlobalCoupler::SourceVoltage.real;
+		delete GlobalCoupler::Current.real;
+		delete GlobalCoupler::SourceVoltage.imag;
+		delete GlobalCoupler::Current.imag;
+		GlobalCoupler::terminated = true;
+	}
 }
 
