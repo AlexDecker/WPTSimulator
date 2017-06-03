@@ -1,7 +1,7 @@
 #include "GlobalCoupler.h"
 #include <ctime>
 
-
+const char* GlobalCoupler::mailBox = "";
 GlobalCoupler* GlobalCoupler::Instance = NULL;
 int GlobalCoupler::nodesUpToNow = 0;
 Matrix* GlobalCoupler::partialZMatrix;

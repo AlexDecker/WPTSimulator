@@ -55,6 +55,13 @@ Resonator::translateCoil(double dx, double dy, double dz){
 	environment->translateCoil(nodeId, dx, dy, dz);
 }
 
+void Resonator::sendBroadcastMessage(const char* message){
+	GlobalCoupler::mailBox = message;
+}
+const char* Resonator::getMailBox(){
+	return GlobalCoupler::mailBox;
+}
+
 Resonator::~Resonator(){
 	delete coilRef;
 }

@@ -28,6 +28,8 @@ class GlobalCoupler{
 		static GlobalCoupler* getInstance();
 		static GlobalCoupler* getInstance(int nNodes, double permeability, double frequency);
 		
+		static const char* mailBox;
+		
 		complexDouble getCurrent(int nodeId);
 		double getCapacitance(int nodeId);//(mF)
 

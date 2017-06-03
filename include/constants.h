@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 //various
-#define VERBOSE 1 //if not 0, print the mutual inductance values in
+#define VERBOSE 0 //if not 0, print the mutual inductance values in
 //(1.0e-5)H and the elapsed time in seconds
 #define COIL_RESOLUTION (500) //number of points that define a coil
 #define PI (3.1415926535)
