@@ -249,7 +249,7 @@ GlobalCoupler::calculateMutualInductance(int id1, int id2){
 	#if VERBOSE
 		clock_t end = clock();
 		double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-		printf("<Between coils %d and %d:: %f (x10-5H) time: %.4f (s) pure partialZMatrix value: %f| ", id1, id2, GlobalCoupler::env_permeability
+		printf("<Between coils %d and %d:: %f (x10-5H) time: %.4f (s) pure partialZMatrix value: %f />", id1, id2, GlobalCoupler::env_permeability
 			*100*(*partialZMatrix)(id1+1,id2+1)/(4*PI),elapsed_secs, (*partialZMatrix)(id1+1,id2+1));
 	#endif
 }
