@@ -111,7 +111,7 @@ GlobalCoupler::updateFrequency(double frequency){
 }
 
 void
-GlobalCoupler::updateResitance(int nodeId, double newResistance){
+GlobalCoupler::updateResistance(int nodeId, double newResistance){
 	if((nodeId>=0)&&(nodeId<GlobalCoupler::nodesUpToNow)){
 		if(newResistance>0.0){
 			(*GlobalCoupler::partialZMatrix)(nodeId+1, nodeId+1) = newResistance;
@@ -225,7 +225,7 @@ GlobalCoupler::addNode(Coil& coil,double resistance, complexDouble sourceVoltage
 	GlobalCoupler::allTheSame=false;
 	GlobalCoupler::coilContainer[id]=coil;
 	updateSourceVoltage(id, sourceVoltage);
-	updateResitance(id, resistance);
+	updateResistance(id, resistance);
 	return id;
 }
 

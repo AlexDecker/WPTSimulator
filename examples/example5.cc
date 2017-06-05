@@ -34,9 +34,9 @@ void example5(){
 	//impedance matching
 	RX->sendBroadcastMessage("5");
 	printf("Impedance Matching: Set resistance to %s ohms\n",TX1->getMailBox());
-	TX1->updateResitance((double)atoi(TX1->getMailBox()));
-	TX2->updateResitance((double)atoi(TX2->getMailBox()));
-	TX3->updateResitance((double)atoi(TX3->getMailBox()));
+	TX1->updateResistance((double)atoi(TX1->getMailBox()));
+	TX2->updateResistance((double)atoi(TX2->getMailBox()));
+	TX3->updateResistance((double)atoi(TX3->getMailBox()));
 	
 	//move the RX coil over the square of 0.4x0.4 around the origin
 	RX->translateCoil(-0.2, -0.2, 0.0);

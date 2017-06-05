@@ -35,7 +35,7 @@ class GlobalCoupler{
 
 		void updateSourceVoltage(int nodeId, complexDouble newVoltage);
 		static void updateFrequency(double frequency);
-		void updateResitance(int nodeId, double newResistance);
+		void updateResistance(int nodeId, double newResistance);
 		bool updatePartialZMatrix(Matrix& newMetrix);
 		
 		void rotateCoil(int nodeId,AXIS axis, double teta);

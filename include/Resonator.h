@@ -22,7 +22,7 @@ class Resonator{
 		void requireGlobalFrequencyUpdate(double newFrequency);
 		void sendBroadcastMessage(const char* message);
 		const char* getMailBox();
-		void updateResitance(double newResistance);
+		void updateResistance(double newResistance);
 		
 		void rotateCoil(AXIS axis, double teta);
 		void translateCoil(double dx, double dy, double dz);

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "Matrix.h"
 
 #ifndef UTIL_H
@@ -34,5 +35,6 @@ typedef struct{
 }complexDouble;
 
 void showError(const char* s);
+double distance(point A, point B);
 
 #endif

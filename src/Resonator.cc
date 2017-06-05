@@ -40,8 +40,8 @@ void Resonator::requireGlobalFrequencyUpdate(double newFrequency){
 }
 
 void
-Resonator::updateResitance(double newResistance){
-	environment->updateResitance(nodeId, newResistance);
+Resonator::updateResistance(double newResistance){
+	environment->updateResistance(nodeId, newResistance);
 	resistance = newResistance;
 }
 

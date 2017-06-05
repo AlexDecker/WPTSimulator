@@ -4,7 +4,7 @@
 //various
 #define VERBOSE 0 //if not 0, print the mutual inductance values in
 //(1.0e-5)H and the elapsed time in seconds
-#define COIL_RESOLUTION (100) //number of points that define a coil
+#define COIL_RESOLUTION (1000) //number of points that define a coil
 #define PI (3.1415926535)
 #define F_1KHZ (1.0e+3)
 #define F_10KHZ (1.0e+4)
