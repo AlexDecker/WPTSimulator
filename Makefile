@@ -19,6 +19,7 @@ all: objects
 	@echo "BUILD SUCCESSFUL"
 	
 ns3: objects
+	mkdir -p $(NS3_DIR)
 	$(AR) -cvq $(NS3_DIR)/$(LIB) $(OUT_DIR)/*.o
 	@echo "BUILD SUCCESSFUL"
 
